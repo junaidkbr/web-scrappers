@@ -2,16 +2,14 @@
 include_once 'HtmlWeb.php';
 use simplehtmldom\HtmlWeb;
 
-// get DOM from URL or file
 $doc = new HtmlWeb();
 
-//Load file
 $csvFile = file("blogsList.csv");
 
 foreach ($csvFile as $k => $line) {
 	$blogDetails = [];
 	$url = trim('https://www.summersphc.com'. $line);
-	$html = $doc->load( $url );
+	$html = $doc->load($url);
 
 	$blogDetails[] = $html->find('head link[rel=canonical]', 0)->href;
 	$blogDetails[] = $html->find('head meta[name=description]', 0)->content;
@@ -25,22 +23,19 @@ foreach ($csvFile as $k => $line) {
 	$blogDetails[] = $html->find('article[id=MainZone] h1[itemprop=headline]', 0)->plaintext;
 	$blogDetails[] = $html->find('article[id=MainZone] img', 0)->src;
 	$blogDetails[] = $html->find('article[id=MainZone] time', 0)->plaintext;
-	$blogDetails[] = trim(str_replace(',', '|||||', $html->find('.content-box', 0)));
-	// echo '<pre>';
-	// print_r( $blogDetails );exit;
+	$blogDetails[] = trim( $html->find('.content-box', 0));
 
-	$result = writeCsv( $blogDetails );
-	echo 'done';
-	break;
+	$result = writeCsv($blogDetails);
 }
 
-function writeCsv( $data )
+echo "Done";
+
+function writeCsv($data)
 {
 
-	  $file = fopen( "blogs.csv","a+" );
+	  $file = fopen("blogs.csv","a+");
 
 	  fputcsv($file, $data);
 
 	  fclose($file);
-	  return;
 }
